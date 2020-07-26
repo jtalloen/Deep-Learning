@@ -1,3 +1,3 @@
 # Deep Learning
 
-This folder contains deep learning python code.
+This folder contains selections of deep learning python code.
