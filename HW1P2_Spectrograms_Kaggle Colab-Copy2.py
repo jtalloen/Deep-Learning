@@ -24,48 +24,10 @@ cuda = torch.cuda.is_available()
 cuda
 
 
-# ### Dataloader
+### Dataloader
 
 # Will be getting two dataset, a train and labels.
-
-# In[52]:
-
-
-# class MyDataset(data.Dataset):
-#     def __init__(self, X, Y, k):
-#         self.X = X
-#         self.Y = Y
-#         self.Xcat = np.load(self.X, allow_pickle = True)
-#         self.Ycat = np.concatenate(np.load(self.Y, allow_pickle = True), axis = 0)
-        
-#         self.k = k
-#         self.length = np.array([0.0])
-
-#         if self.k > 0:
-#             for i in range(len(self.Xcat)):
-#                 self.length = np.append(self.length, self.length[-1] + len(self.Xcat[i]))
-#                 zeros = np.zeros((self.k, 40)).astype(float)
-#                 self.Xcat[i] = np.append(zeros, self.Xcat[i], axis = 0)  
-#                 self.Xcat[i] = np.append(self.Xcat[i], zeros, axis = 0)
-                
-#         self.Xcat = np.concatenate(self.Xcat, axis = 0)
-#         self.length = np.sort(self.length)
-        
-#     def __len__(self):
-#         return len(self.Ycat)
-
-#     def __getitem__(self, index):
-#         # need to index this properly.  Hmmm 
-#         # every time we hit value in array, increase index x by 12
-#         ind = np.argwhere(self.length <= index)
-#         maxind = np.argmax(ind)
-#         indexx = index + self.k*(maxind + 1)
-        
-#         X = self.Xcat[slice(indexx - self.k, indexx + self.k + 1)].reshape(-1).astype(float)
-#         Y = self.Ycat[index]
-#         return X, Y
-    
-    
+   
     
 class MyDataset(data.Dataset):
     def __init__(self, X, Y, k):
@@ -91,8 +53,6 @@ class MyDataset(data.Dataset):
         return X, Y
 
 
-# In[53]:
-
 
 num_workers = 4 if cuda else 0 
 batch_size = 512 if cuda else 64
@@ -111,20 +71,10 @@ test_dataset = MyDataset('dev.npy', 'dev_labels.npy', k)
 test_params = dict(shuffle=False, batch_size=batch_size, num_workers=num_workers, pin_memory=True) if cuda                    else dict(shuffle=False, batch_size=batch_size)
 
 test_load = data.DataLoader(test_dataset, **test_params)
+ 
 
 
-# In[54]:
-
-
-# for (x,y) in train_load:
-#     print(x.shape, y.shape)
-    
-
-
-# ### Define a NN Class
-
-# In[55]:
-
+### Define a NN Class
 
 class simpleMLP(nn.Module):
     def __init__(self, linear_layers, num_batch_norm, num_dropout):
@@ -154,14 +104,7 @@ class simpleMLP(nn.Module):
         return self.net(x)
 
 
-# ### Create the model and define our loss criterion
-
-# May want to add optimal learning rate schedule
-# 
-
-# In[61]:
-
-
+### Create the model and define our loss criterion
 
 input_size = 40*(2*k + 1)
 model = simpleMLP([input_size, 2048, 2048, 1024, 1024, 1024, 512, 256, 138], 5, 6)
@@ -173,12 +116,7 @@ model.to(device)
 print(model, criterion)
 
 
-# ### Training function
-
-# Basically we do a foward pass, then compute the loss, backward pass, take a step and reset.
-
-# In[57]:
-
+### Training function
 
 def train_epoch(model, train_load, criterion, optimizer):
     # indicate that we are training 
@@ -208,10 +146,7 @@ def train_epoch(model, train_load, criterion, optimizer):
     return end_train, start_train, running_loss
 
 
-# ### Test function
-
-# In[58]:
-
+### Test function
 
 def test_model(model, test_load, criterion, testout, batch_size):
     with torch.no_grad():
@@ -246,10 +181,7 @@ def test_model(model, test_load, criterion, testout, batch_size):
         return running_loss, acc
 
 
-# ### Initialize and run our model
-
-# In[60]:
-
+### Initialize and run our model
 
 n_epochs = 10
 
@@ -279,14 +211,6 @@ for i in range(n_epochs):
     
     print('='*20)
 
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
 
 
 
