@@ -1,11 +1,5 @@
-#!/usr/bin/env python
-# coding: utf-8
 
-# # Spectrograms NN 
-
-# First import the necessary packages 
-
-# In[51]:
+### First import the necessary packages 
 
 
 import numpy as np
